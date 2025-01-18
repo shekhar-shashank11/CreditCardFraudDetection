@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 function Hero() {
   return (
     <div id='home' className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -19,12 +19,12 @@ function Hero() {
         <p className="text-xl mb-8 animate-fade-in-up">
           Protect your business with our advanced AI-powered solution
         </p>
-        <a 
-          href="#upload" 
+        <Link 
+          to="/detection" 
           className="bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 animate-pulse"
         >
           Get Started
-        </a>
+        </Link>
       </div>
     </div>
   );

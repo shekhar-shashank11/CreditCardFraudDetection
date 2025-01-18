@@ -30,3 +30,23 @@
 .animate-fade-in-up {
   animation: fade-in-up 1s ease-out;
 }
+/* src/index.css */
+@keyframes gradientBackground {
+  0% {
+    background-color: #ff7e5f;
+    background-image: linear-gradient(45deg, #ff7e5f, #feb47b);
+  }
+  50% {
+    background-color: #6a11cb;
+    background-image: linear-gradient(45deg, #6a11cb, #2575fc);
+  }
+  100% {
+    background-color: #ff7e5f;
+    background-image: linear-gradient(45deg, #ff7e5f, #feb47b);
+  }
+}
+
+.background-animation {
+  animation: gradientBackground 10s ease infinite;
+  background-size: 400% 400%;
+}
