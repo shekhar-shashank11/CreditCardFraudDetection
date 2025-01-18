@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 import os
 from flask_cors import CORS
+from sklearn.impute import SimpleImputer
 
 app = Flask(__name__)
 CORS(app)
@@ -33,9 +34,12 @@ def upload_file():
 
         # Process the CSV file
         data = pd.read_csv(file_path)
-        
+        # Handle missing values with SimpleImputer
+        imputer = SimpleImputer(strategy='mean')
+        data_imputed = pd.DataFrame(imputer.fit_transform(data), columns=data.columns)
+
         # Ensure data matches the model features
-        predictions = model.predict(data)
+        predictions = model.predict(data_imputed)
 
         # Convert predictions into a readable format
         results = [{"Transaction": i+1, "Fraudulent": bool(pred)} for i, pred in enumerate(predictions)]
