@@ -64,6 +64,7 @@ const FileUpload = () => {
   const [loading, setLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState("LogisticRegression");
   const [animationComplete, setAnimationComplete] = useState(false);
+  const [modelName, setModelName] = useState("Logistic Regression");
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimationComplete(true), 1000);
@@ -79,6 +80,7 @@ const FileUpload = () => {
   const handleModelSelect = (model) => {
     setSelectedModel(model);
     setError("");
+    console.log(modelName);
   };
 
   const handleSubmit = async (e) => {
@@ -88,6 +90,7 @@ const FileUpload = () => {
       setError("Please upload a file");
       return;
     }
+
 
     const formData = new FormData();
     formData.append("file", file);
@@ -128,6 +131,7 @@ const FileUpload = () => {
       animateRotate: true,
       animateScale: true,
       duration: 2000,
+      millisecondsloop: true   
     },
     plugins: {
       tooltip: {
@@ -140,6 +144,8 @@ const FileUpload = () => {
       },
     },
   };
+
+  console.log(modelName);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex flex-col items-center justify-center p-6 relative overflow-hidden">
@@ -161,20 +167,21 @@ const FileUpload = () => {
           initial={{ scale: 0 }}
           animate={{ scale: animationComplete ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl relative overflow-hidden border border-blue-500"
+          className="bg-slate-100 backSdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl relative overflow-hidden border border-blue-500"
         >
           <motion.h1
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="text-4xl font-bold text-blue-300 text-center mb-6"
+            className="text-4xl font-bold text-blue-500 text-center mb-6"
           >
             Credit Card Fraud Detection
           </motion.h1>
 
           <motion.form
             onSubmit={handleSubmit}
-            className="w-full max-w-lg bg-white  p-8 rounded-lg shadow-md mx-auto"
+            onClick={() => setModelName(selectedModel === "LogisticRegression" ? "Logistic Regression" : "Random Forest")}
+            className="w-full max-w-lg bg-blue-500    p-8 rounded-lg shadow-md mx-auto"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.5 }}
@@ -182,7 +189,7 @@ const FileUpload = () => {
             <div className="mb-6">
               <label
                 htmlFor="file-upload"
-                className="flex flex-col items-center px-4 py-6 bg-blue-900 text-blue-300 rounded-lg shadow-lg tracking-wide uppercase border border-blue-500 cursor-pointer hover:bg-blue-800 hover:text-blue-200 transition-all duration-300"
+                className="flex flex-col items-center px-4 py-6 bg-blue-900 text-white rounded-lg shadow-lg tracking-wide uppercase border border-blue-500 cursor-pointer hover:bg-blue-800 hover:text-blue-200 transition-all duration-300"
               >
                 <svg className="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
@@ -197,12 +204,12 @@ const FileUpload = () => {
                 />
               </label>
               {file && (
-                <p className="mt-2 text-sm text-blue-300 text-center">
+                <p className="mt-2 text-sm text-white text-center">
                   Selected file: {file.name}
                 </p>
               )}
             </div>
-            <h2 className="text-sm font-bold mb-4 text-blue-300 text-center">Choose Model:</h2>
+            <h2 className="text-sm font-bold mb-4 text-white text-center">Choose Model:</h2>
             <div className="flex justify-center gap-4 mb-6">
               {["LogisticRegression", "RandomForestClassifier"].map((model) => (
                 <motion.button
@@ -211,8 +218,8 @@ const FileUpload = () => {
                   onClick={() => handleModelSelect(model)}
                   className={`px-4 py-2 rounded-full ${
                     selectedModel === model
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-blue-300"
+                      ? "bg-red-600 text-white"
+                      : "bg-white text-black"
                   } transition-colors duration-300`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -223,7 +230,7 @@ const FileUpload = () => {
             </div>
             <motion.button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-full shadow-lg"
+              className="w-full bg-gradient-to-r from-green-500 to-green-900 text-white py-3 px-6 rounded-full shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -246,6 +253,7 @@ const FileUpload = () => {
               )}
             </motion.button>
           </motion.form>
+          
 
           <AnimatePresence>
             {error && (
@@ -262,6 +270,8 @@ const FileUpload = () => {
 
           <AnimatePresence>
             {results.length > 0 && !loading && (
+              <div>
+              <h2 className="text-3xl text-center pt-5 font-bold underline ">Using {modelName}</h2>
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -279,19 +289,21 @@ const FileUpload = () => {
                     <Pie data={pieData} options={pieOptions} />
                   </div>
                 </motion.div>
-
+              
                 <div>
-                  <h2 className="text-2xl font-bold text-blue-300 mb-4 text-center">
+                
+                
+                  <h2 className="text-2xl font-bold text-black mb-4 text-center">
                     Transaction Results
                   </h2>
-                  <div className="overflow-y-auto max-h-56 bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                  <div className="overflow-y-auto max-h-56 border-black rounded-lg p-4">
                     <table className="w-full border-collapse text-sm">
                       <thead>
-                        <tr className="bg-blue-900 bg-opacity-50">
-                          <th className="border border-blue-500 px-4 py-2 text-blue-300">
+                        <tr className="bg-white ">
+                          <th className="border border-black px-4 py-2 text-white bg-slate-500">
                             Transaction ID
                           </th>
-                          <th className="border border-blue-500 px-4 py-2 text-blue-300">
+                          <th className="border border-black px-4 py-2 text-white bg-slate-500">
                             Prediction
                           </th>
                         </tr>
@@ -304,14 +316,14 @@ const FileUpload = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`${
-                              item.Fraudulent ? "bg-red-900 bg-opacity-20" : "bg-green-900 bg-opacity-20"
+                              item.Fraudulent ? "bg-red-300 " : "bg-green-500 bg-opacity-20"
                             }`}
                           >
-                            <td className="border border-blue-500 px-4 py-2 text-center text-blue-300">
+                            <td className="border border-black px-4 py-2 text-center text-black">
                               {item.Transaction}
                             </td>
                             <td
-                              className={`border border-blue-500 px-4 py-2 text-center font-semibold ${
+                              className={`border border-black px-4 py-2 text-center font-semibold ${
                                 item.Fraudulent ? "text-red-400" : "text-green-400"
                               }`}
                             >
@@ -325,7 +337,7 @@ const FileUpload = () => {
                 </div>
 
                 <motion.div
-                  className="flex justify-between col-span-2 mt-6 gap-8 text-blue-300"
+                  className="flex justify-between col-span-2 mt-6 gap-8 text-black font-bold"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1 }}
@@ -344,6 +356,7 @@ const FileUpload = () => {
                   </div>
                 </motion.div>
               </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </motion.div>
