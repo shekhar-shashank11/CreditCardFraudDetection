@@ -1,21 +1,84 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { motion, AnimatePresence } from "framer-motion";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, Sphere, Box, Cylinder, Text, Line, MeshWobbleMaterial } from "@react-three/drei";
 
-// Registering chart elements and components
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+const CyberBackground = () => {
+  const groupRef = useRef();
+  const { viewport } = useThree();
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    groupRef.current.rotation.y = Math.sin(time / 4) * 0.2;
+    groupRef.current.rotation.x = Math.cos(time / 4) * 0.1;
+  });
+
+  const gridSize = 10;
+  const lineCount = 5;
+
+  return (
+    <group ref={groupRef}>
+      {/* Grid */}
+      {[...Array(lineCount)].map((_, i) => (
+        <React.Fragment key={i}>
+          <Line
+            points={[
+              [-gridSize / 2, -gridSize / 2 + (i * gridSize) / (lineCount - 1), 0],
+              [gridSize / 2, -gridSize / 2 + (i * gridSize) / (lineCount - 1), 0],
+            ]}
+            color="#00ff00"
+            lineWidth={1}
+            dashed={true}
+          />
+          <Line
+            points={[
+              [-gridSize / 2 + (i * gridSize) / (lineCount - 1), -gridSize / 2, 0],
+              [-gridSize / 2 + (i * gridSize) / (lineCount - 1), gridSize / 2, 0],
+            ]}
+            color="#00ff00"
+            lineWidth={1}
+            dashed={true}
+          />
+        </React.Fragment>
+      ))}
+
+      {/* Floating cubes */}
+
+      
+
+      {/* Floating text */}
+     
+    </group>
+  );
+};
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("LogisticRegression");
+  const [animationComplete, setAnimationComplete] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimationComplete(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setError("");
     setResults([]);
+  };
+
+  const handleModelSelect = (model) => {
+    setSelectedModel(model);
+    setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -28,6 +91,7 @@ const FileUpload = () => {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("model", selectedModel);
 
     setLoading(true);
     try {
@@ -42,10 +106,8 @@ const FileUpload = () => {
     }
   };
 
-  const fraudCount = results.reduce(
-    (acc, row) => (row.Fraudulent ? acc + 1 : acc),
-    0
-  );
+  // Calculate stats for pie chart and results
+  const fraudCount = results.reduce((acc, row) => (row.Fraudulent ? acc + 1 : acc), 0);
   const legitCount = results.length - fraudCount;
   const totalCount = results.length;
 
@@ -66,12 +128,11 @@ const FileUpload = () => {
       animateRotate: true,
       animateScale: true,
       duration: 2000,
-      loop: true, // Enables continuous animation
     },
     plugins: {
       tooltip: {
         callbacks: {
-          label: function (tooltipItem) {
+          label: (tooltipItem) => {
             const percentage = Math.round((tooltipItem.raw / totalCount) * 100);
             return `${tooltipItem.label}: ${percentage}%`;
           },
@@ -81,127 +142,212 @@ const FileUpload = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center p-6 relative"
-      style={{
-                 backgroundImage: "url('https://png.pngtree.com/thumb_back/fh260/background/20230702/pngtree-d-illustration-of-black-concrete-background-with-blue-credit-card-design-image_3739414.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center', }}
-    >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-
-      {/* Content */}
-      <div
-        className="max-w-4xl w-full bg-white p-10 rounded-2xl shadow-2xl relative overflow-hidden"
-        style={{ animation: "float 4s ease-in-out infinite" }}
-      >
-        {/* Floating Decorative Elements */}
-        <div className="absolute w-48 h-48 bg-blue-500 opacity-20 rounded-full -top-16 -left-16 animate-bounce"></div>
-        <div className="absolute w-32 h-32 bg-pink-400 opacity-20 rounded-full -bottom-16 right-10 animate-bounce delay-150"></div>
-        <div className="absolute w-24 h-24 bg-yellow-400 opacity-20 rounded-full top-20 left-20 animate-pulse"></div>
-
-        {/* Heading */}
-        <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
-          Credit Card Fraud Detection
-        </h1>
-
-        {/* File Upload Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-lg bg-gray-100 p-8 rounded-lg shadow-md mx-auto"
-        >
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out mb-4"
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            {loading ? "Processing..." : "Upload and Detect"}
-          </button>
-        </form>
-
-        {/* Error Message */}
-        {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-
-        {/* Results */}
-        {results.length > 0 && !loading && (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Pie Chart */}
-            <div className="flex justify-center">
-              <div className="w-72 h-72">
-                <Pie data={pieData} options={pieOptions} />
-              </div>
-              
-            </div>
-            
-
-
-            {/* Table */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-                Results
-              </h2>
-              <div className="overflow-y-auto max-h-56">
-                <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
-                  <thead>
-                    <tr className="bg-gray-200">
-                      <th className="border border-gray-300 px-4 py-2">Transaction ID</th>
-                      <th className="border border-gray-300 px-4 py-2">Prediction</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map((item, index) => (
-                      <tr
-                        key={index}
-                        className={`hover:bg-gray-100 ${
-                          item.Fraudulent ? "bg-red-200" : "bg-green-200"
-                        }`}
-                      >
-                        <td className="border border-gray-300 px-4 py-2 text-center">
-                          {item.Transaction}
-                        </td>
-                        <td
-                          className={`border border-gray-300 px-4 py-2 text-center font-semibold ${
-                            item.Fraudulent ? "text-red-600" : "text-green-600"
-                          }`}
-                        >
-                          {item.Fraudulent ? "Fraudulent" : "Legitimate"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                
-              </div>
-            </div>
-
-    {/* Total Transactions, Fraud, and Legitimate Counts */}
-    <div className="flex  items-center justify-center mt-6 gap-8">
-  <div className="text-sm text-gray-600">
-    <strong className="text-blue-600 text-lg">Total Transactions:</strong> 
-    <span className="text-gray-800 text-xl text-semibold">{totalCount}</span>
-  </div>
-
-  <div className="text-sm text-gray-600 py-5">
-    <strong className="text-red-600 text-lg">Fraudulent :</strong> 
-    <span className="text-red-800 text-xl">{fraudCount}</span>
-  </div>
-
-  <div className="text-sm text-gray-600">
-    <strong className="text-green-600 text-lg">Legitimate :</strong> 
-    <span className="text-green-800 text-xl">{legitCount}</span>
-  </div>
-</div>
-
-
-          </div>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Canvas camera={{ position: [0, 0, 5] }}>
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={1} />
+          <CyberBackground />
+          <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
+        </Canvas>
       </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="z-10 w-full max-w-4xl"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: animationComplete ? 1 : 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl relative overflow-hidden border border-blue-500"
+        >
+          <motion.h1
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="text-4xl font-bold text-blue-300 text-center mb-6"
+          >
+            Credit Card Fraud Detection
+          </motion.h1>
+
+          <motion.form
+            onSubmit={handleSubmit}
+            className="w-full max-w-lg bg-white  p-8 rounded-lg shadow-md mx-auto"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+          >
+            <div className="mb-6">
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center px-4 py-6 bg-blue-900 text-blue-300 rounded-lg shadow-lg tracking-wide uppercase border border-blue-500 cursor-pointer hover:bg-blue-800 hover:text-blue-200 transition-all duration-300"
+              >
+                <svg className="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                </svg>
+                <span className="mt-2 text-base leading-normal">Select a file</span>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              {file && (
+                <p className="mt-2 text-sm text-blue-300 text-center">
+                  Selected file: {file.name}
+                </p>
+              )}
+            </div>
+            <h2 className="text-sm font-bold mb-4 text-blue-300 text-center">Choose Model:</h2>
+            <div className="flex justify-center gap-4 mb-6">
+              {["LogisticRegression", "RandomForestClassifier"].map((model) => (
+                <motion.button
+                  key={model}
+                  type="button"
+                  onClick={() => handleModelSelect(model)}
+                  className={`px-4 py-2 rounded-full ${
+                    selectedModel === model
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-700 text-blue-300"
+                  } transition-colors duration-300`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {model === "LogisticRegression" ? "Logistic Regression" : "Random Forest"}
+                </motion.button>
+              ))}
+            </div>
+            <motion.button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-full shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {loading ? (
+                <motion.div
+                  className="flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    className="h-5 w-5 border-t-2 border-b-2 border-white rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  <span className="ml-2">Processing...</span>
+                </motion.div>
+              ) : (
+                "Upload and Detect"
+              )}
+            </motion.button>
+          </motion.form>
+
+          <AnimatePresence>
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-red-500 mt-4 text-center"
+              >
+                {error}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {results.length > 0 && !loading && (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ delay: 0.5 }}
+                className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                <motion.div
+                  className="flex justify-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                >
+                  <div className="w-72 h-72">
+                    <Pie data={pieData} options={pieOptions} />
+                  </div>
+                </motion.div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-blue-300 mb-4 text-center">
+                    Transaction Results
+                  </h2>
+                  <div className="overflow-y-auto max-h-56 bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="bg-blue-900 bg-opacity-50">
+                          <th className="border border-blue-500 px-4 py-2 text-blue-300">
+                            Transaction ID
+                          </th>
+                          <th className="border border-blue-500 px-4 py-2 text-blue-300">
+                            Prediction
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {results.map((item, index) => (
+                          <motion.tr
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`${
+                              item.Fraudulent ? "bg-red-900 bg-opacity-20" : "bg-green-900 bg-opacity-20"
+                            }`}
+                          >
+                            <td className="border border-blue-500 px-4 py-2 text-center text-blue-300">
+                              {item.Transaction}
+                            </td>
+                            <td
+                              className={`border border-blue-500 px-4 py-2 text-center font-semibold ${
+                                item.Fraudulent ? "text-red-400" : "text-green-400"
+                              }`}
+                            >
+                              {item.Fraudulent ? "Fraudulent" : "Legitimate"}
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <motion.div
+                  className="flex justify-between col-span-2 mt-6 gap-8 text-blue-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                >
+                  <div>
+                    <strong className="text-blue-500">Total Transactions: </strong>
+                    <span className="text-bold">{totalCount}</span>
+                  </div>
+                  <div>
+                    <strong className="text-red-500">Fraudulent: </strong>
+                    <span className="text-bold">{fraudCount}</span>
+                  </div>
+                  <div>
+                    <strong className="text-green-500">Legitimate: </strong>
+                    <span>{legitCount}</span>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
