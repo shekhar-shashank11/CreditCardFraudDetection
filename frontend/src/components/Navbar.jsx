@@ -15,7 +15,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-blue-300 px-4 py-3">
+    <nav className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-white px-4 py-3">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -65,7 +65,7 @@ const Navbar = () => {
         animate={isMenuOpen ? "open" : "closed"}
         variants={menuVariants}
         transition={{ duration: 0.3 }}
-        className={`md:hidden mt-3 space-y-2 bg-gray-800 text-blue-300 rounded shadow-lg p-4 ${
+        className={`md:hidden mt-3 space-y-2 bg-gray-800 text-white rounded shadow-lg p-4 ${
           isMenuOpen ? "block" : "hidden"
         }`}
       >
