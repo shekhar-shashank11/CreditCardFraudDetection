@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
+import { motion } from "framer-motion"
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -6,56 +7,50 @@ const ContactForm = () => {
     email: "",
     contactNo: "",
     message: "",
-  });
+  })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData({
       ...formData,
       [name]: value,
-    });
-  };
+    })
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Message sent by ${formData.name}!`);
-    setFormData({ name: "", email: "", contactNo: "", message: "" });
-  };
+    e.preventDefault()
+    alert(`Message sent by ${formData.name}!`)
+    setFormData({ name: "", email: "", contactNo: "", message: "" })
+  }
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center p-6 relative"
-      style={{
-        backgroundImage: "url('https://source.unsplash.com/1600x900/?abstract,nature')",
-      }}
-    >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-
-      {/* Form Container */}
-      <div
-        className="max-w-3xl w-full bg-white p-10 rounded-2xl shadow-2xl relative overflow-hidden"
-        style={{ animation: "float 4s ease-in-out infinite" }}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="max-w-3xl w-full bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl border border-blue-500"
       >
-        {/* Floating Decorative Elements */}
-        <div className="absolute w-48 h-48 bg-indigo-500 opacity-20 rounded-full -top-16 -left-16 animate-bounce"></div>
-        <div className="absolute w-32 h-32 bg-pink-400 opacity-20 rounded-full -bottom-16 right-10 animate-bounce delay-150"></div>
-        <div className="absolute w-24 h-24 bg-yellow-400 opacity-20 rounded-full top-20 left-20 animate-pulse"></div>
-
-        {/* Contact Form Content */}
-        <h2 className="text-4xl font-bold text-gray-800 text-center mb-4">
-          Let's Connect
-        </h2>
-        <p className="text-center text-gray-600 mb-6">
-          Fill out the form, and we'll reach out to you soon.
-        </p>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 relative z-10"
+        <motion.h2
+          className="text-4xl font-bold text-blue-300 text-center mb-4"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
         >
+          Let's Connect
+        </motion.h2>
+        <motion.p
+          className="text-center text-blue-200 mb-6"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Fill out the form, and we'll reach out to you soon.
+        </motion.p>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
+              <label htmlFor="name" className="block text-sm font-medium text-blue-300">
                 Name
               </label>
               <input
@@ -65,11 +60,11 @@ const ContactForm = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                className="mt-1 block w-full p-3 rounded-lg bg-gray-800 bg-opacity-50 border border-blue-500 text-blue-200 placeholder-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            </motion.div>
+            <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
+              <label htmlFor="email" className="block text-sm font-medium text-blue-300">
                 Email
               </label>
               <input
@@ -79,13 +74,13 @@ const ContactForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                className="mt-1 block w-full p-3 rounded-lg bg-gray-800 bg-opacity-50 border border-blue-500 text-blue-200 placeholder-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-            </div>
+            </motion.div>
           </div>
 
-          <div>
-            <label htmlFor="contactNo" className="block text-sm font-medium text-gray-700">
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}>
+            <label htmlFor="contactNo" className="block text-sm font-medium text-blue-300">
               Contact Number
             </label>
             <input
@@ -95,12 +90,12 @@ const ContactForm = () => {
               value={formData.contactNo}
               onChange={handleChange}
               required
-              className="mt-1 block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+              className="mt-1 block w-full p-3 rounded-lg bg-gray-800 bg-opacity-50 border border-blue-500 text-blue-200 placeholder-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }}>
+            <label htmlFor="message" className="block text-sm font-medium text-blue-300">
               Message
             </label>
             <textarea
@@ -110,22 +105,30 @@ const ContactForm = () => {
               value={formData.message}
               onChange={handleChange}
               required
-              className="mt-1 block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+              className="mt-1 block w-full p-3 rounded-lg bg-gray-800 bg-opacity-50 border border-blue-500 text-blue-200 placeholder-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             ></textarea>
-          </div>
+          </motion.div>
 
-          <div className="text-center">
-            <button
+          <motion.div
+            className="text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <motion.button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               Send Message
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </form>
-      </div>
+      </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default ContactForm;
+export default ContactForm
+
