@@ -1,0 +1,16 @@
+@startuml
+title Credit Card Fraud Detection Workflow
+
+actor User
+participant "Frontend (React)" as Frontend
+participant "Backend (Flask)" as Backend
+database "Model Storage" as ModelStorage
+
+User -> Frontend : Uploads CSV file
+Frontend -> Backend : Sends file for processing
+Backend -> ModelStorage : Loads pre-trained model
+Backend -> Backend : Processes uploaded data
+Backend -> Backend : Makes predictions
+Backend -> User : Returns prediction results
+
+@enduml

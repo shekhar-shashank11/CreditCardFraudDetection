@@ -4,6 +4,7 @@ import joblib
 import os
 from flask_cors import CORS
 from sklearn.impute import SimpleImputer
+import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -39,22 +40,27 @@ def upload_file():
     imputer = SimpleImputer(strategy='mean')
     data_imputed = pd.DataFrame(imputer.fit_transform(data), columns=data.columns)
 
-    # Get the selected model from the request (defaults to Logistic Regression)
-    model_choice = request.form.get("model", "LogisticRegression")
-
-    # Choose the appropriate model
-    if model_choice == "LogisticRegression":
-        model = model_logistic
-    elif model_choice == "RandomForestClassifier":
-        model = model_rf
-    else:
-        return jsonify({"error": "Invalid model choice"})
-
     # Ensure data matches the model features
-    predictions = model.predict(data_imputed)
+    rf_predictions_prob = model_rf.predict_proba(data_imputed)[:, 1]  # Random Forest probabilities
+    logistic_predictions_prob = model_logistic.predict_proba(data_imputed)[:, 1]  # Logistic Regression probabilities
+
+    # Combine predictions (e.g., average probabilities)
+    combined_predictions_prob = (rf_predictions_prob + logistic_predictions_prob) / 2
+    combined_predictions = combined_predictions_prob > 0.5  # Threshold for fraud detection
 
     # Convert predictions into a readable format
-    results = [{"Transaction": i+1, "Fraudulent": bool(pred)} for i, pred in enumerate(predictions)]
+    results = [
+        {
+            "Transaction": i + 1,
+            "RandomForest_Probability": float(rf_prob),
+            "LogisticRegression_Probability": float(lr_prob),
+            "Combined_Probability": float(combined_prob),
+            "Fraudulent": bool(combined_pred)
+        }
+        for i, (rf_prob, lr_prob, combined_prob, combined_pred) in enumerate(
+            zip(rf_predictions_prob, logistic_predictions_prob, combined_predictions_prob, combined_predictions)
+        )
+    ]
 
     return jsonify(results)
 
