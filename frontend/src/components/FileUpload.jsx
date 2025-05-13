@@ -5,7 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere, Box, Cylinder, Text, Line, MeshWobbleMaterial } from "@react-three/drei";
-
+import Aurora from "./Aurora";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CyberBackground = () => {
@@ -148,15 +148,15 @@ const FileUpload = () => {
   console.log(modelName);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 5] }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <CyberBackground />
-          <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
-        </Canvas>
-      </div>
+  <Aurora
+    colorStops={["#00FFF7", "#5A00FF", "#FF00C8"]}
+    blend={2}
+    amplitude={2.0}
+    speed={1.5}
+  />
+</div>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

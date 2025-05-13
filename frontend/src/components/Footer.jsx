@@ -35,10 +35,10 @@ const Footer = () => {
         <motion.div variants={itemVariants}>
           <h3 className="text-lg font-semibold mb-4 text-blue-200">Contact Info</h3>
           <ul className="space-y-2 text-sm">
-            <li>Address: 123 AI Street</li>
-            <li>Tech City, Future Country</li>
+            <li>Address:Sonarpur,near Future Institute Of Engineering and Management</li>
+            <li>West Bengal,India</li>
             <li>Phone: (123) 456-7890</li>
-            <li>Email: info@fraudsave.ai</li>
+            <li>Email: abc@gmail.com</li>
           </ul>
         </motion.div>
 
