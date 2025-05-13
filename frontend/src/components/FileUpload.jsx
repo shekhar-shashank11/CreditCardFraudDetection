@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere, Box, Cylinder, Text, Line, MeshWobbleMaterial } from "@react-three/drei";
 import Aurora from "./Aurora";
+import GradientText from "./GradientText";
+import ShinyText from "./ShinyText";
+import StarBorder from "./StarBorder";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CyberBackground = () => {
@@ -77,11 +80,13 @@ const FileUpload = () => {
     setResults([]);
   };
 
-  const handleModelSelect = (model) => {
-    setSelectedModel(model);
-    setError("");
-    console.log(modelName);
-  };
+const handleModelSelect = (model) => {
+  setSelectedModel(model);
+  setError("");
+  if (model === "LogisticRegression") setModelName("Logistic Regression");
+  else if (model === "RandomForestClassifier") setModelName("Random Forest");
+  else if (model === "CombinedModel") setModelName("Combined Model");
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,9 +157,9 @@ const FileUpload = () => {
       <div className="absolute inset-0 z-0">
   <Aurora
     colorStops={["#00FFF7", "#5A00FF", "#FF00C8"]}
-    blend={2}
-    amplitude={2.0}
-    speed={1.5}
+    blend={1.0}
+    amplitude={1.8}
+    speed={1.2}
   />
 </div>
       <motion.div
@@ -167,7 +172,7 @@ const FileUpload = () => {
           initial={{ scale: 0 }}
           animate={{ scale: animationComplete ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="bg-slate-100 backSdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl relative overflow-hidden border border-blue-500"
+          className="bg-gray-100  backSdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl relative overflow-hidden border border-blue-500"
         >
           <motion.h1
             initial={{ y: -50, opacity: 0 }}
@@ -175,12 +180,25 @@ const FileUpload = () => {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="text-4xl font-bold text-blue-500 text-center mb-6"
           >
-            Credit Card Fraud Detection
+             <GradientText
+                        colors={[ "#1C1C7C", "#FF0055", "#2B32B2"," #FFD700"]}
+                        animationSpeed={3}
+                        showBorder={false}
+                        className="inline"
+                      >
+                        Credit Card Fraud Detection
+                      </GradientText>
+            
           </motion.h1>
 
           <motion.form
             onSubmit={handleSubmit}
-            onClick={() => setModelName(selectedModel === "LogisticRegression" ? "Logistic Regression" : "Random Forest")}
+onClick={() => {
+  if (selectedModel === "LogisticRegression") setModelName("Logistic Regression");
+  else if (selectedModel === "RandomForestClassifier") setModelName("Random Forest");
+  else if (selectedModel === "CombinedModel") setModelName("Combined Model");
+}}
+
             className="w-full max-w-lg bg-blue-500    p-8 rounded-lg shadow-md mx-auto"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -194,7 +212,7 @@ const FileUpload = () => {
                 <svg className="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                 </svg>
-                <span className="mt-2 text-base leading-normal">Select a file</span>
+                <ShinyText text="SELECT A FILE" disabled={false} speed={3} className='custom-class' />
                 <input
                   id="file-upload"
                   type="file"
@@ -209,31 +227,44 @@ const FileUpload = () => {
                 </p>
               )}
             </div>
-            <h2 className="text-sm font-bold mb-4 text-white text-center">Choose Model:</h2>
+            <h2 className="text-lg font-bold mb-4 text-white text-center underline">
+              Choose Model:</h2>
             <div className="flex justify-center gap-4 mb-6">
-              {["LogisticRegression", "RandomForestClassifier"].map((model) => (
-                <motion.button
-                  key={model}
-                  type="button"
-                  onClick={() => handleModelSelect(model)}
-                  className={`px-4 py-2 rounded-full ${
-                    selectedModel === model
-                      ? "bg-red-600 text-white"
-                      : "bg-white text-black"
-                  } transition-colors duration-300`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {model === "LogisticRegression" ? "Logistic Regression" : "Random Forest"}
-                </motion.button>
-              ))}
+{["LogisticRegression", "RandomForestClassifier", "CombinedModel"].map((model) => (
+  <motion.button
+    key={model}
+    type="button"
+    onClick={() => handleModelSelect(model)}
+    className={`px-4 py-2 rounded-full ${
+      selectedModel === model
+        ? "bg-purple-600 text-white"
+        : "bg-white text-black"
+    } transition-colors duration-300`}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {model === "LogisticRegression"
+      ? "Logistic Regression"
+      : model === "RandomForestClassifier"
+      ? "Random Forest"
+      : "Combined Model"}
+  </motion.button>
+))}
             </div>
+            
             <motion.button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-green-900 text-white py-3 px-6 rounded-full shadow-lg"
+              className="w-full text-white  rounded-full "
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
+               <StarBorder
+            as="button"
+            className="custom-class"
+            color="white"
+            speed="4s"
+            
+          >
               {loading ? (
                 <motion.div
                   className="flex items-center justify-center"
@@ -246,12 +277,14 @@ const FileUpload = () => {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   />
-                  <span className="ml-2">Processing...</span>
+                  <ShinyText text="Processing..." disabled={false} speed={3} className='custom-class' />
                 </motion.div>
               ) : (
-                "Upload and Detect"
+                <ShinyText text="Upload and Detect" disabled={false} speed={3} className='custom-class' />
               )}
+              </StarBorder>
             </motion.button>
+            
           </motion.form>
           
 
@@ -267,98 +300,140 @@ const FileUpload = () => {
               </motion.p>
             )}
           </AnimatePresence>
-
           <AnimatePresence>
-            {results.length > 0 && !loading && (
-              <div>
-              <h2 className="text-3xl text-center pt-5 font-bold underline ">Using {modelName}</h2>
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 50 }}
-                transition={{ delay: 0.5 }}
-                className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"
-              >
-                <motion.div
-                  className="flex justify-center"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.7, type: "spring" }}
-                >
-                  <div className="w-72 h-72">
-                    <Pie data={pieData} options={pieOptions} />
-                  </div>
-                </motion.div>
-              
-                <div>
-                
-                
-                  <h2 className="text-2xl font-bold text-black mb-4 text-center">
-                    Transaction Results
-                  </h2>
-                  <div className="overflow-y-auto max-h-56 border-black rounded-lg p-4">
-                    <table className="w-full border-collapse text-sm">
-                      <thead>
-                        <tr className="bg-white ">
-                          <th className="border border-black px-4 py-2 text-white bg-slate-500">
-                            Transaction ID
-                          </th>
-                          <th className="border border-black px-4 py-2 text-white bg-slate-500">
-                            Prediction
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {results.map((item, index) => (
-                          <motion.tr
-                            key={index}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className={`${
-                              item.Fraudulent ? "bg-red-300 " : "bg-green-500 bg-opacity-20"
-                            }`}
-                          >
-                            <td className="border border-black px-4 py-2 text-center text-black">
-                              {item.Transaction}
-                            </td>
-                            <td
-                              className={`border border-black px-4 py-2 text-center font-semibold ${
-                                item.Fraudulent ? "text-red-400" : "text-green-400"
-                              }`}
-                            >
-                              {item.Fraudulent ? "Fraudulent" : "Legitimate"}
-                            </td>
-                          </motion.tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+  {results.length > 0 && !loading && (
+    <div>
+      <h2 className="text-3xl text-center pt-5 font-bold underline ">
+        Using {modelName}
+      </h2>
 
-                <motion.div
-                  className="flex justify-between col-span-2 mt-6 gap-8 text-black font-bold"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 }}
-                >
-                  <div>
-                    <strong className="text-blue-500">Total Transactions: </strong>
-                    <span className="text-bold">{totalCount}</span>
-                  </div>
-                  <div>
-                    <strong className="text-red-500">Fraudulent: </strong>
-                    <span className="text-bold">{fraudCount}</span>
-                  </div>
-                  <div>
-                    <strong className="text-green-500">Legitimate: </strong>
-                    <span>{legitCount}</span>
-                  </div>
-                </motion.div>
-              </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 50 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Pie Chart */}
+        <motion.div
+          className="flex justify-center"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.7, type: "spring" }}
+        >
+          <div className="w-72 h-72">
+            <Pie data={pieData} options={pieOptions} />
+          </div>
+        </motion.div>
+
+        {/* Transaction Table */}
+        <div>
+          <h2 className="text-2xl font-bold text-black mb-4 text-center">
+            Transaction Results
+          </h2>
+
+          <div className="overflow-y-auto max-h-56 border-black rounded-lg p-4">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-white">
+                  <th className="border border-black px-4 py-2 text-white bg-slate-500">
+                    Transaction ID
+                  </th>
+                  {selectedModel === "CombinedModel" && (
+                    <>
+                      <th className="border border-black px-4 py-2 text-white bg-slate-500">
+                        RF Prob
+                      </th>
+                      <th className="border border-black px-4 py-2 text-white bg-slate-500">
+                        LR Prob
+                      </th>
+                      <th className="border border-black px-4 py-2 text-white bg-slate-500">
+                        Combined Prob
+                      </th>
+                    </>
+                  )}
+                  <th className="border border-black px-4 py-2 text-white bg-slate-500">
+                    Prediction
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((item, index) => (
+                  <motion.tr
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`${
+                      item.Fraudulent
+                        ? "bg-red-300"
+                        : "bg-green-500 bg-opacity-20"
+                    }`}
+                  >
+                    <td className="border border-black px-4 py-2 text-center text-black">
+                      {item.Transaction}
+                    </td>
+                    {selectedModel === "CombinedModel" && (
+  <>
+    <td className="border border-black px-4 py-2 text-center text-black">
+      {typeof item.RandomForest_Probability === "number"
+        ? item.RandomForest_Probability.toFixed(2)
+        : "N/A"}
+    </td>
+    <td className="border border-black px-4 py-2 text-center text-black">
+      {typeof item.LogisticRegression_Probability === "number"
+        ? item.LogisticRegression_Probability.toFixed(2)
+        : "N/A"}
+    </td>
+    <td className="border border-black px-4 py-2 text-center text-black">
+      {typeof item.Combined_Probability === "number"
+        ? item.Combined_Probability.toFixed(2)
+        : "N/A"}
+    </td>
+  </>
+)}
+
+                    <td
+                      className={`border border-black px-4 py-2 text-center font-semibold ${
+                        item.Fraudulent ? "text-red-400" : "text-green-400"
+                      }`}
+                    >
+                      {item.Fraudulent ? "Fraudulent" : "Legitimate"}
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <motion.div
+          className="flex justify-between col-span-2 mt-6 gap-8 text-black font-bold"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+        >
+          <div>
+            <strong className="text-blue-500">Total Transactions: </strong>
+            <span className="text-bold">{totalCount}</span>
+          </div>
+          <div>
+            <strong className="text-red-500">Fraudulent: </strong>
+            <span className="text-bold">{fraudCount}</span>
+          </div>
+          <div>
+            <strong className="text-green-500">Legitimate: </strong>
+            <span>{legitCount}</span>
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+  )}
+</AnimatePresence>
+
+
+
         </motion.div>
       </motion.div>
     </div>

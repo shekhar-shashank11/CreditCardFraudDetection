@@ -103,6 +103,7 @@ function Hero() {
             className="inline-block px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-fuchsia-900 to-violet-500 rounded-full shadow-md hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
 
           >
+            
             <ShinyText text="Get Started" disabled={false} speed={3} className='custom-class' />
           </Link>
           
